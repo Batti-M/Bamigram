@@ -19,28 +19,53 @@ const user = usePage().props.auth.user;
 const form = useForm({
     name: user.name,
     email: user.email,
-    username: user.username
+    username: user.username,
 });
+
+const imageForm = useForm({
+    profile_photo_url: user.profile_photo_url,
+})
+
+function uploadImage(e) {
+    imageForm.profile_photo_url = e.target.files[0];
+    user.profile_photo_url = e.target.files[0]
+
+};
+
+function updateProfile() {
+    form.patch(route('profile.update'), {  
+    });
+}
+
+function updateProfileImage() {
+    imageForm.post(route('profile.store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+           imageForm.clear();
+        },
+    });
+}
 </script>
 
 <template>
     <section>
         <header>
             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Profile Information</h2>
-
+            
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                 Update your account's profile information and email address.
             </p>
         </header>
-
-        <form @submit.prevent="form.patch(route('profile.update'))" class="mt-6 space-y-6">
-            <div class="text-gray-200 flex flex-col">
-                <InputLabel for="photo" value="Photo" />
-                update your photo here
-                <input type="file" id="photo" name="photo" />
+        <img v-if="user.profile_photo_url" :src="user.profile_photo_url" alt="profile image" class="w-20 h-20 rounded-full object-cover">
+        <form @submit.prevent="updateProfileImage">
+            <div class="text-gray-200">
+                <label for="profile_photo_url">Image</label>
+                <input type="file" @input="uploadImage" id="profile_photo_url" name="profile_photo_url" class="border border-gray-200 rounded px-2 py-1">
+                <button type="submit" class="bg-blue-500 px-4 py-2 rounded ml-4 hover:bg-blue-700">Upload</button>
             </div>
-
-
+        </form>
+        <form @submit.prevent="updateProfile" class="mt-6 space-y-6" enctype="multipart/form-data">
+            
             <div>
                 <InputLabel for="name" value="Name" />
 

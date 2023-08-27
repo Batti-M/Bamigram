@@ -2,25 +2,49 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
+use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Redirect;
+use App\Http\Requests\ProfileUpdateRequest;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 class ProfileController extends Controller
 {
+
+    public function store(Request $request){
+        if(!$request->hasFile('profile_photo_url')){
+            dd($request->all());
+            return redirect()->back()->with('error', 'No file selected');
+        }
+        $attributes = $request->validate([
+            'profile_photo_url' => 'required|image|mimes:jpeg,png,jpg',
+        ]);
+
+        $user = User::find(auth()->user()->id);
+        if($user->profile_photo_url != null){
+            Storage::disk('public/storage/')->delete($user->profile_photo_url);
+        }
+        
+        $user->update([
+            'profile_photo_url' => $request->profile_photo_url->store('images', 'public')
+        ]);
+
+        return redirect()->route('posts.index')->with('success', 'Profile photo updated successfully');
+    }
     /**
      * Display the user's profile form.
      */
     public function edit(Request $request): Response
     {
+        
         return Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-            'status' => session('status'),
+            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail, 
+            'status' => session('status'), 
         ]);
     }
 
@@ -39,6 +63,7 @@ class ProfileController extends Controller
 
         return Redirect::route('profile.edit');
     }
+
 
     /**
      * Delete the user's account.

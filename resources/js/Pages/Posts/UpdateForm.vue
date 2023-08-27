@@ -12,14 +12,6 @@
                 </div>
             </div>
 
-            <!-- <div class="flex flex-col" no-validate>
-                <label for="img_url">Image</label>
-                <input type="file" @change="uploadImage" id="imgUrl" name="img_url" class="border border-gray-200 rounded px-2 py-1" no-validate>
-                <div v-if="router.page.props.errors.img_url" class="text-red-500 text-sm">
-                    {{ router.page.props.errors.img_url }}
-                </div>
-            </div> -->
-
         </div>
 
         <div class="flex ">
@@ -35,8 +27,8 @@
 </template>
 
 <script setup>
+
 import { useForm, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
 
 const { post } = defineProps({
     post: {
@@ -44,27 +36,13 @@ const { post } = defineProps({
     }
 });
 
-
 const form = useForm({
     body: post.body,
 });
 
-const changeImage = ref(false);
-
-
 function update() {
-    console.log(form);
     router.patch(`/posts/${post.id}`, form)
-    //used before but that doesnt work as well
-   // form.post(`/posts/${post.id}`)
 }
-
-
-
-function uploadImage(e) {
-    form.img_url = e.target.files[0];
-};
-
 
 </script>
 

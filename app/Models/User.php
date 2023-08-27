@@ -24,6 +24,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'github_id',
+        'profile_photo_url',
     ];
 
     /**
@@ -51,6 +52,12 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Get the user's profile photo.
      */
+    public function getProfilePhotoUrlAttribute(): string
+    {
+        return $this->attributes['profile_photo_url']
+            ? asset('storage/' . $this->attributes['profile_photo_url'])
+            : 'https://ui-avatars.com/api/?name=' . urlencode($this->attributes['name']) . '&color=7F9CF5&background=EBF4FF';
+    }
 
     //actions for likes
     public function like(Post $post)

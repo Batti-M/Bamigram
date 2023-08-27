@@ -36,6 +36,7 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
+
         $attributes = $request->validate([
             'img_url' => ['sometimes', 'file', 'image', 'max:6048'],
             'body' => ['required', 'min:3'],
