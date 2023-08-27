@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class VerifyEmail extends Mailable
+class NewFollower extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -27,7 +27,7 @@ class VerifyEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'You gained a new follower!',
+            subject: 'New Follower',
         );
     }
 
@@ -37,7 +37,7 @@ class VerifyEmail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.New_Follower',
         );
     }
 
