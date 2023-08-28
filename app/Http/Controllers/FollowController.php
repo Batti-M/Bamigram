@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Notifications\NewFollowerGained;
+use App\Mail\NewFollower;
 use Illuminate\Http\Request;
+use App\Events\FollowerGained;
+
 
 class FollowController extends Controller
 {
-    public function follow(User $user, Request $request)
+    public function follow(User $user , Request $request)
     {
        
         $author = User::find($request->author['id']);
@@ -16,14 +18,11 @@ class FollowController extends Controller
         if ($request->user()->isFollowing($author)) {
             return redirect()->back()->with('error', 'You are already following this user.');
         }
-
-
-        // Follow the user
+       
         $authenticatedUser = User::find(auth()->user()->id);
         $authenticatedUser->follow($author);
 
-        // Send a notification to the user being followed
-        //$user->notify(new NewFollowerGained());
+        event(new FollowerGained($authenticatedUser, $author));
 
         return redirect()->back()->with('success', 'You are now following this user.');
     }
