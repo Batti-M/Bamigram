@@ -54,7 +54,7 @@ Route::get("/home", function(Request $request){
         'phpVersion' => PHP_VERSION,
         'allUsers' => User::all(),
         'users' => User::query()->when($request->input('search'), function($query, $search){
-            $query->where('name', 'LIKE', "%{$search}%");
+            $query->where('username', 'LIKE', "%{$search}%");
         })->paginate(10)->withQueryString(),
     ]);
 })->name('home');

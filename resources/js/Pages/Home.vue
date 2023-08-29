@@ -57,11 +57,11 @@ watch(search, (value) => {
                                 <small class="text-xs">Create a new post</small>
                         </Link>
                     </div>
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <ul v-if="search">
+                    <div v-if="search" class="p-6 text-gray-900 dark:text-gray-100">
+                        <ul >
                             <li v-for="user in $page.props.users.data" :key="user.id">
                                 <Link>
-                                    {{ user.name }}
+                                    {{ user.username }}
                                 </Link>
                             </li>
                         </ul>

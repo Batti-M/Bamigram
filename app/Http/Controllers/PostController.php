@@ -38,9 +38,14 @@ class PostController extends Controller
     {
 
         $attributes = $request->validate([
-            'img_url' => ['sometimes', 'file', 'image', 'max:6048'],
+            'img_url' => ['file', 'image', 'max:6048'],
+            'description' => ['sometimes', 'string', 'max:255'], // 'nullable
             'body' => ['required', 'min:3'],
         ]);
+
+        if (!request()->hasFile('img_url')) {
+            return redirect()->back()->with('error', 'Please upload an image.');
+        }
 
         $attributes['user_id'] = auth()->id();
         $attributes['img_url'] = request()->file('img_url')->store('images', 'public');
@@ -92,13 +97,13 @@ class PostController extends Controller
 
         $attributes = $request->validate([
             'img_url' => ['sometimes', 'file', 'image', 'max:6048'],
-            'body' => [ 'required', 'min:3'],
+            'body' => ['required', 'min:3'],
         ]);
 
         $post = Post::find($id);
-      
+
         $post->update($attributes);
-      
+
         return to_route('posts.index');
     }
 

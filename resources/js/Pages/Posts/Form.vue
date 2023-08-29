@@ -12,9 +12,10 @@
                 </div>
             </div>
 
-            <div class="flex flex-col" no-validate>
+            <div class="flex flex-col">
                 <label for="img_url">Image</label>
-                <input type="file" @input="uploadImage" id="imgUrl" name="img_url" class="border border-gray-200 rounded px-2 py-1" no-validate>
+                <input type="file" @input="uploadImage" id="imgUrl" name="img_url" class="border border-gray-200 rounded px-2 py-1" >
+                <input type="text" name="description" placeholder="describe your picture" class="border border-gray-200 rounded px-2 py-1 mt-2 text-gray-900" >
                 <div v-if="router.page.props.errors.img_url" class="text-red-500 text-sm">
                     {{ router.page.props.errors.img_url }}
                 </div>
@@ -22,25 +23,21 @@
 
         </div>
 
+        
         <div class="flex ">
-            <button @click="changeImage = true" class="text-black rounded px-4 py-2 my-4"
-                :class="{ 'bg-green-400 text-white': !form.processing, 'bg-grey-300': form.processing }">Upload new
-                Picture</button>
-        </div>
-        <div v-if="!isInUpdateMode" class="flex ">
+
             <button :disabled="form.processing" class="text-black rounded px-4 py-2 my-4"
                 :class="{ 'bg-blue-500 text-white': !form.processing, 'bg-grey-300': form.processing }">Create</button>
+                
         </div>
-        <div v-if="isInUpdateMode" class="flex ">
-            <button :disabled="form.processing" class="text-black rounded px-4 py-2 my-4"
-                :class="{ 'bg-blue-500 text-white': !form.processing, 'bg-grey-300': form.processing }">Update</button>
-        </div>
+
     </form>
 </template>
 
 <script setup>
+
 import { useForm, router } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+
 
 const { post } = defineProps({
     post: {
@@ -55,18 +52,10 @@ const form = useForm({
     body: post.body || '',
 });
 
-const changeImage = ref(false);
-const isInUpdateMode = computed(() => !!post.body);
+function submit() { 
 
-function submit() {
-    if (isInUpdateMode.value) {
-        form.patch(`/posts/${post.id}`, {
-            isDirty: true
-        });
-    } else {
         form.post('/posts');
-    }
-    console.log(isInUpdateMode.value)
+
 }
 
 function uploadImage(e) {
