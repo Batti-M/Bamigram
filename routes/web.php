@@ -1,6 +1,8 @@
 <?php
 
+use App\Models\User;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\LikeController;
@@ -12,6 +14,8 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Notification;
 use App\Http\Controllers\SocialAuthController;
+use Illuminate\Support\Facades\Request as FacadesRequest;
+use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,20 +45,22 @@ Route::post('/like/{post}', [LikeController::class, 'like'])->name('like');
 Route::delete('/unlike/{post}', [LikeController::class, 'unlike'])->name('unlike');
 
 
-Route::get("/home", function(){
+Route::get("/home", function(Request $request){
    
     return Inertia::render("Home",[
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
+        'allUsers' => User::all(),
+        'users' => User::query()->when($request->input('search'), function($query, $search){
+            $query->where('name', 'LIKE', "%{$search}%");
+        })->paginate(10)->withQueryString(),
     ]);
 })->name('home');
 
 
 Route::get("/users", function(){
-    
-    Notification::send(auth()->user(), new NewFollowerGained());
 
     return Inertia::render("Users",[
         'canLogin' => Route::has('login'),

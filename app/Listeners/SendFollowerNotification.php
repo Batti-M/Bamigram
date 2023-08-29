@@ -13,6 +13,7 @@ class SendFollowerNotification implements ShouldQueue
     /**
      * Create the event listener.
      */
+    use InteractsWithQueue;
     public function __construct()
     {
         //

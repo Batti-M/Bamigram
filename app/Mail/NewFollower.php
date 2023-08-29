@@ -38,7 +38,7 @@ class NewFollower extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            text: 'You have a new follower!',
+            view: 'emails.new-follower',
         );
     }
 

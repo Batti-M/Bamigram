@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { ref, watch } from 'vue';
 
 defineProps({
     canLogin: {
@@ -17,6 +18,15 @@ defineProps({
         type: String,
         required: true,
     },
+    users: {
+        type: Object,
+    },
+});
+
+const search = ref('');
+
+watch(search, (value) => {
+    router.get('/home', { search: value }, { preserveState: true });
 });
 </script>
 
@@ -39,16 +49,25 @@ defineProps({
                             </i>
                                 <small class="text-xs">Search for posts</small>
                         </Link>
-                   
+                        <input v-model="search" type="text" class="border-2 border-gray-300 bg-white h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none" placeholder="Search for a user">
 
                         <Link href="/posts/create" class="text-gray-900 dark:text-gray-100 flex flex-col pr-4">
                             <i class="fa-sharp fa-solid fa-pen text-3xl " style="color: #d8dee9;"> 
                             </i>
                                 <small class="text-xs">Create a new post</small>
                         </Link>
+                    </div>
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <ul v-if="search">
+                            <li v-for="user in $page.props.users.data" :key="user.id">
+                                <Link>
+                                    {{ user.name }}
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
                     
 
-                </div>
             </div>
         </div>
    </AuthenticatedLayout>
