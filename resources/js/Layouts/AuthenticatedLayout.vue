@@ -20,7 +20,7 @@ const showingNavigationDropdown = ref(false);
                         <div class="flex">
                             <!-- Logo -->
                             <div class="shrink-0 flex items-center">
-                                <Link :href="route('dashboard')">
+                                <Link :href="route('explore')">
                                     <ApplicationLogo
                                         class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200"
                                     />
@@ -29,18 +29,13 @@ const showingNavigationDropdown = ref(false);
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                    Dashboard
+                                <NavLink :href="route('explore')" :active="route().current('explore')">
+                                    Explore
                                 </NavLink>
                                 <NavLink :href="route('home')" :active="route().current('home')">
                                     home
                                 </NavLink>
-                                <NavLink :href="route('users')" :active="route().current('users')">
-                                    users
-                                </NavLink>
-                                <NavLink :href="route('posts.index')" :active="route().current('posts')">
-                                    Posts
-                                </NavLink>
+                             
                             </div>
                         </div>
 
@@ -121,9 +116,13 @@ const showingNavigationDropdown = ref(false);
                     class="sm:hidden"
                 >
                     <div class="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                            Dashboard
+                        <ResponsiveNavLink :href="route('explore')" :active="route().current('explore')">
+                            Explore
                         </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('home')" :active="route().current('home')">
+                            home
+                        </ResponsiveNavLink>
+
                     </div>
 
                     <!-- Responsive Settings Options -->

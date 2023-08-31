@@ -11,6 +11,7 @@ use App\Notifications\NewFollowerGained;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Notification;
 use App\Http\Controllers\SocialAuthController;
@@ -45,49 +46,23 @@ Route::post('/like/{post}', [LikeController::class, 'like'])->name('like');
 Route::delete('/unlike/{post}', [LikeController::class, 'unlike'])->name('unlike');
 
 
-Route::get("/home", function(Request $request){
-   
-    return Inertia::render("Home",[
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-        'allUsers' => User::all(),
-        'users' => User::query()->when($request->input('search'), function($query, $search){
-            $query->where('username', 'LIKE', "%{$search}%");
-        })->paginate(10)->withQueryString(),
-    ]);
-})->name('home');
+Route::get("/home", [HomeController::class, 'index'])->name('home');
 
-
-Route::get("/users", function(){
-
-    return Inertia::render("Users",[
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'), 
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-})->name('users');
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
     ]);
 });
 
 
 Route::middleware(['auth', 'verified'])->group(function () {
     
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+    Route::get('/explore', [PostController::class, 'index'])->name('explore');
     
-
     Route::resource('/posts', PostController::class);
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/profile', [ProfileController::class, 'store'])->name('profile.store');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

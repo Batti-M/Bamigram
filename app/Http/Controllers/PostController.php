@@ -6,17 +6,25 @@ use Log;
 use App\Models\Post;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
+use App\Services\ImageService;
 
 class PostController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    public $imageService;
+
+    public function __construct(ImageService $imageService)
+    {
+        $this->imageService = $imageService;
+    }
+    
     public function index()
     {
         return Inertia::render(
-            'Posts/Index',
+            'Explore',
             [
                 'posts' => Post::latest()->get(),
             ]
@@ -47,9 +55,12 @@ class PostController extends Controller
             return redirect()->back()->with('error', 'Please upload an image.');
         }
 
-        $attributes['user_id'] = auth()->id();
-        $attributes['img_url'] = request()->file('img_url')->store('images', 'public');
+        $attributes['user_id'] = request()->user()->id;
 
+        $path = $this->imageService->handleImageUpload($request->file('img_url'));
+
+        $attributes = array_merge($attributes, ['img_url' => $path]);
+     
         Post::create($attributes);
 
         return redirect()->route('home')->with('success', 'Post created successfully.');
@@ -96,7 +107,6 @@ class PostController extends Controller
     {
 
         $attributes = $request->validate([
-            'img_url' => ['sometimes', 'file', 'image', 'max:6048'],
             'body' => ['required', 'min:3'],
         ]);
 
@@ -104,7 +114,7 @@ class PostController extends Controller
 
         $post->update($attributes);
 
-        return to_route('posts.index');
+        return redirect()->route('posts.index');
     }
 
     /**

@@ -4,6 +4,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
+import { ref  } from 'vue';
 
 defineProps({
     mustVerifyEmail: {
@@ -26,10 +27,16 @@ const imageForm = useForm({
     profile_photo_url: user.profile_photo_url,
 })
 
-function uploadImage(e) {
+let imageFromSource = ref(imageForm.profile_photo_url);
+function uploadImage(e) {   
     imageForm.profile_photo_url = e.target.files[0];
-    user.profile_photo_url = e.target.files[0]
+    //user.profile_photo_url = URL.createObjectURL(e.target.files[0]);
+    const reader = new FileReader();
 
+    reader.onload = (e) => {
+        imageFromSource.value = e.target.result;
+    };
+    reader.readAsDataURL(imageForm.profile_photo_url);
 };
 
 function updateProfile() {
@@ -40,9 +47,6 @@ function updateProfile() {
 function updateProfileImage() {
     imageForm.post(route('profile.store'), {
         preserveScroll: true,
-        onSuccess: () => {
-           imageForm.clear();
-        },
     });
 }
 </script>
@@ -56,10 +60,10 @@ function updateProfileImage() {
                 Update your account's profile information and email address.
             </p>
         </header>
-        <img v-if="user.profile_photo_url" :src="user.profile_photo_url" alt="profile image" class="w-20 h-20 rounded-full object-cover">
+        <img v-if="imageForm.profile_photo_url" :src="imageFromSource" alt="profile image" class="w-24 h-24 rounded-full object-cover">
         <form @submit.prevent="updateProfileImage">
-            <div class="text-gray-200">
-                <label for="profile_photo_url">Image</label>
+            <div class="text-gray-200 flex justify-between items-center mt-2 ">
+                <label for="profile_photo_url m-4">Image</label>
                 <input type="file" @input="uploadImage" id="profile_photo_url" name="profile_photo_url" class="border border-gray-200 rounded px-2 py-1">
                 <button type="submit" class="bg-blue-500 px-4 py-2 rounded ml-4 hover:bg-blue-700">Upload</button>
             </div>

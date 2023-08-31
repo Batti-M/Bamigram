@@ -6,6 +6,7 @@ use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\Request;
+use App\Services\ImageService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
@@ -16,25 +17,36 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 class ProfileController extends Controller
 {
 
+    public $imageService;
+
+    public function __construct(ImageService $imageService)
+    {
+        $this->imageService = $imageService;
+    }
+    
     public function store(Request $request){
+
+      
         if(!$request->hasFile('profile_photo_url')){
-            dd($request->all());
-            return redirect()->back()->with('error', 'No file selected');
+            return redirect()->route('explore')->with('error', 'No file selected');
         }
-        $attributes = $request->validate([
+
+        $request->validate([
             'profile_photo_url' => 'required|image|mimes:jpeg,png,jpg',
         ]);
 
         $user = User::find(auth()->user()->id);
-        if($user->profile_photo_url != null){
-            Storage::disk('public/storage/')->delete($user->profile_photo_url);
+       
+        if(Storage::disk('public')->exists( $user->profile_photo_url)){
+            Storage::disk('public')->delete( $user->profile_photo_url);
         }
         
+        $path = $this->imageService->handleImageUpload($request->file('profile_photo_url'));
         $user->update([
-            'profile_photo_url' => $request->profile_photo_url->store('images', 'public')
+            'profile_photo_url' => $path,
         ]);
 
-        return redirect()->route('posts.index')->with('success', 'Profile photo updated successfully');
+        return redirect()->route('explore')->with('success', 'Profile photo updated successfully');
     }
     /**
      * Display the user's profile form.

@@ -7,13 +7,12 @@
 
         <div class="flex flex-col p-4">
             <small> {{ created }}</small>
-            <p class="underline mb-4"> {{ post.author.name }}</p>
-            <p class="mb-4">you got {{ author.followers.length }} Follower(s)</p>
+            <p class="underline mb-4"> {{ post.author.username }}</p>
 
-            <form v-if="!isFollower" @submit.prevent="follow" method="post">
+            <form v-if="!isFollower && post.author.username !== $page.props.auth.user.username  " @submit.prevent="follow" method="post">
                 <button class="bg-purple-700 text-white rounded-lg p-2 px-4 mt-2">Follow</button>
             </form>
-            <form v-if="isFollower" @submit.prevent="unfollow" method="post">
+            <form v-if="isFollower && post.author.username == $page.props.auth.user.username " @submit.prevent="unfollow" method="post">
                 <button class="bg-purple-700 text-white rounded-lg p-2 px-4 mt-2">Unfollow</button>
             </form>
 
