@@ -20,16 +20,12 @@ comments: {
 const page = usePage()
 const allComments = ref(page.props.comments)
 
-onMounted(() => {
-    
-    Echo.private(`post.${page.props.post.id}`)
-        .listen('CommentEvent', (e) => {
-            console.log('data', e.comment);
-          allComments.value.push(e.comment)
-        });
-});
-
-
+    onMounted(() => {
+        Echo.private(`post.${page.props.post.id}`).listen('App\Events\CommentEvent', e => {
+            console.log('data', e.comment)
+            allComments.value.push(e.comment)
+        })
+    })
 </script>
 
 <template>
