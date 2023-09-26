@@ -13,10 +13,19 @@ use Illuminate\Support\Facades\Broadcast;
 |
 */
 
-Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
+Broadcast::channel('App.Models.User.{id}', function ($user, $id)
+{
     return (int) $user->id === (int) $id;
 });
 
-Broadcast::channel('post.{id}', function ($user) {
-    return $user ? true : false;
+Broadcast::channel('notification', function ($user)
+{
+    return $user->email_verified_at !== null;
 });
+
+// Broadcast::channel('post.{id}', function ($user, $postId)
+// {
+//     $followerIds = Post::findOrFail($postId)->user()->followers()->pluck('follower_id')->toArray();
+
+//     return in_array($user->id, [...$followerIds, Post::findOrFail($postId)->user_id]);
+// });
